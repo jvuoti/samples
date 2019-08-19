@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -93,6 +95,27 @@ namespace Host
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+
+                //var typeDescriptorType = typeof(TypeDescriptor);
+
+                //var typeDescriptorProviderTable = typeDescriptorType.GetField("s_providerTable", BindingFlags.Static | BindingFlags.NonPublic);
+                //var providerTable = (Hashtable)typeDescriptorProviderTable.GetValue(null);
+                //providerTable.Clear();
+
+                //var typeDescriptorDefaultProvidersTable = typeDescriptorType.GetField("s_defaultProviders", BindingFlags.Static | BindingFlags.NonPublic);
+                //var defaultProvidersTable = (Hashtable)typeDescriptorDefaultProvidersTable.GetValue(null);
+                //defaultProvidersTable.Clear();
+
+                //var systemAssembly = typeof(TypeConverter).Assembly;
+                //var reflectTypeDescriptionProviderType = systemAssembly.GetType("System.ComponentModel.ReflectTypeDescriptionProvider");
+
+                //var reflectTypeDescriptorProviderTable = reflectTypeDescriptionProviderType.GetField("s_attributeCache", BindingFlags.Static | BindingFlags.NonPublic);
+                //var attributeCacheTable = (Hashtable)reflectTypeDescriptorProviderTable.GetValue(null);
+                //attributeCacheTable.Clear();
+
+                //var reflectTypeDescriptorIntrinsicProviderTable = reflectTypeDescriptionProviderType.GetField("s_intrinsicTypeConverters", BindingFlags.Static | BindingFlags.NonPublic);
+                //var intrinsicTypeConvertersTable = (Hashtable)reflectTypeDescriptorIntrinsicProviderTable.GetValue(null);
+                //intrinsicTypeConvertersTable.Clear();
             }
 
             Console.WriteLine($"Unload success: {!hostAlcWeakRef.IsAlive}");
