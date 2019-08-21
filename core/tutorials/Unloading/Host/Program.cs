@@ -28,19 +28,6 @@ namespace Host
         // The types present on the host and plugin side would then not match even though they would have the same names.
         protected override Assembly Load(AssemblyName name)
         {
-            if (name.Name == "Newtonsoft.Json")
-            {
-                string jsonNetAssemblyPath = _resolver.ResolveAssemblyToPath(name);
-                Console.WriteLine($"Loading Json.NET assembly {jsonNetAssemblyPath} into the HostAssemblyLoadContext");
-                return LoadFromAssemblyPath(jsonNetAssemblyPath);
-            }
-
-            if (name.Name == "System.ComponentModel.TypeConverter")
-            {
-                // never goes here!
-                throw new FileNotFoundException();
-            }
-
             string assemblyPath = _resolver.ResolveAssemblyToPath(name);
             if (assemblyPath != null)
             {
@@ -64,6 +51,14 @@ namespace Host
         {
             // Create the unloadable HostAssemblyLoadContext
             var alc = new HostAssemblyLoadContext(assemblyPath);
+
+            // Load System.ComponentModel.TypeDescriptor to the ALC beforehand,
+            // as otherwise the internal caches in it will block unloading the ALC: https://github.com/dotnet/coreclr/issues/26271
+            // The netstandard assembly shim also needs to be loaded explicitly for the TypeDescriptor to be loaded.
+            var typeDescriptorAssemblyPath = typeof(TypeDescriptor).Assembly.Location;
+            alc.LoadFromAssemblyPath(typeDescriptorAssemblyPath);
+            var netstandardShimAssemblyPath = Path.Combine(Path.GetDirectoryName(typeDescriptorAssemblyPath), "netstandard.dll");
+            alc.LoadFromAssemblyPath(netstandardShimAssemblyPath);
 
             // Create a weak reference to the AssemblyLoadContext that will allow us to detect
             // when the unload completes.
